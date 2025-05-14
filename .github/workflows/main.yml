@@ -9,7 +9,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    
+
     steps:
     - uses: actions/checkout@v3
     
@@ -28,3 +28,14 @@ jobs:
         npx json-server --watch db.json --routes routes.json --port $PORT
       env:
         PORT: 3000
+    
+    - name: Install ngrok
+      run: npm install -g ngrok
+    
+    - name: Start ngrok
+      run: |
+        ngrok http 3000 > /dev/null &
+        sleep 5 # Give ngrok some time to initialize
+    
+    - name: Display ngrok URL
+      run: curl -s http://127.0.0.1:4040/api/tunnels | jq -r '.tunnels[0].public_url'
